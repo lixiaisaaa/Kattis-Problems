@@ -1,4 +1,4 @@
-package CS4150.PS3;
+package PS3;
 
 import java.util.Arrays;
 import java.util.Scanner;
