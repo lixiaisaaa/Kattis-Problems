@@ -3,11 +3,7 @@ package PS7;
 import java.awt.geom.Point2D;
 import java.util.*;
 
-/**
- * Solves the Kattis Treehouses MST problem
- *
- * CS 4150 / Samuel Gera / 11.6.21
- */
+
 public class treehouse
 {
     /**
