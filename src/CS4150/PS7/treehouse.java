@@ -4,182 +4,104 @@ import java.awt.geom.Point2D;
 import java.util.*;
 
 
-public class treehouse
-{
-    /**
-     * Calculates the distance between two Trees
-     * @param p1 first treehouse position
-     * @param p2 second treehouse position
-     * @return distance
-     */
-    public static double DistanceTo(Point2D.Double p1, Point2D.Double p2)
-    {
-        return Math.sqrt(Math.pow(p1.x - p2.x, 2) + Math.pow(p1.y - p2.y, 2));
+public class treehouse {
+    public static void main(String[] args) {
+        Scanner s = new Scanner(System.in);
+
+        //initialize
+        int n = s.nextInt(), e = s.nextInt(), p = s.nextInt();
+        int[] IDs = new int[n];
+        HashMap<Integer, HashSet<Integer>> graph = new HashMap<>();
+        Point2D.Double[] points = new Point2D.Double[n];
+        ArrayList<Edge> cables = new ArrayList<>();
+
+        //rank 0 for first e trees
+        if (e > 0) {
+            for (int i = 0; i < e; i++) {
+                IDs[i] = 0;
+                points[i] = new Point2D.Double(s.nextDouble(), s.nextDouble());
+                putIntoGraph(i, 0, graph);
+            }
+        }
+
+        //get the rest of points
+        for (int i = e; i < n; i++) {
+            points[i] = new Point2D.Double(s.nextDouble(), s.nextDouble());
+            IDs[i] = i;
+            putIntoGraph(i, i, graph);
+        }
+
+        //union all connected points
+        for (int i = 0; i < p; i++) {
+            int tree1 = s.nextInt(), tree2 = s.nextInt();
+            union(tree1 - 1, tree2 - 1, IDs, graph);
+        }
+
+        System.out.print(String.format("%.6f", kruskal(cables, n, points, graph, IDs)));
     }
 
-    /**
-     * Return the size of some connected component in the
-     * intermediate MST
-     * @param c
-     * @param CCsets
-     * @return
-     */
-    public static int Size(int c, HashMap<Integer, HashSet<Integer>> CCsets)
-    {
-        if(c == -1)
-            return 0;
-        return CCsets.get(c).size();
+
+    private static double kruskal(ArrayList<Edge> cables, int n, Point2D.Double[] points, HashMap<Integer, HashSet<Integer>> graph, int[] IDs) {
+        double res = 0;
+        cables = getAllCableDistance(cables, n, points);
+        Collections.sort(cables);
+
+        for (Edge e : cables) {
+            if (union(e.start, e.end, IDs, graph)) {
+                res += e.distance;
+            }
+        }
+        return res;
     }
 
-    /**
-     * Helper for adding to the set of connected components in CCsets,
-     * as to avoid null-pointer exceptions
-     *
-     * @param t tree
-     * @param c component id
-     * @param CCsets sets of all connected components
-     */
-    public static void AddToComponent(int t, int c, HashMap<Integer, HashSet<Integer>> CCsets)
-    {
-        if(!CCsets.containsKey(c))
-            CCsets.put(c, new HashSet<Integer>());
-        CCsets.get(c).add(t);
+    public static void putIntoGraph(int value, int key, HashMap<Integer, HashSet<Integer>> graph) {
+        if (!graph.containsKey(key))
+            graph.put(key, new HashSet<>());
+        graph.get(key).add(value);
     }
 
-    /**
-     * Will union the components of t1, and t2 if possible
-     *
-     * @param t1 first tree
-     * @param t2 second tree
-     * @param CCs set of tree->component ids
-     * @param CCsets set of all components
-     * @return true if t1's and t2's components were joined, false otherwise
-     */
-    public static boolean Join(int t1, int t2, int[] CCs, HashMap<Integer, HashSet<Integer>> CCsets)
-    {
-
-        // Do nothing in the case they are already connected
-        if(CCs[t1] == CCs[t2])
+    public static boolean union(int tree1, int tree2, int[] IDs, HashMap<Integer, HashSet<Integer>> graph) {
+        //false if connected
+        if (IDs[tree1] == IDs[tree2])
             return false;
 
-            //Add to the bigger component all the elements of the smaller component
-        else if(Size(CCs[t1], CCsets) > Size(CCs[t2], CCsets))
-        {
-            int oldComponent = CCs[t2];
-            for(int x : CCsets.get(oldComponent))
-            {
-                CCs[x] = CCs[t1];
-                AddToComponent(x, CCs[t1], CCsets);
+        //union the small component to larger one
+        if (graph.get(IDs[tree1]).size() > graph.get(IDs[tree1]).size()) {
+            for (int x : graph.get(IDs[tree2])) {
+                IDs[x] = IDs[tree1];
+                putIntoGraph(x, IDs[tree1], graph);
             }
-            CCsets.remove(oldComponent);
-        }
-        else
-        {
-            int oldComponent = CCs[t1];
-            for(int x : CCsets.get(oldComponent))
-            {
-                CCs[x] = CCs[t2];
-                AddToComponent(x, CCs[t2], CCsets);
+        } else {
+            for (int x : graph.get(IDs[tree1])) {
+                IDs[x] = IDs[tree2];
+                putIntoGraph(x, IDs[tree2], graph);
             }
-            CCsets.remove(oldComponent);
         }
         return true;
     }
 
-
-    /**
-     * Entry point for execution
-     * @param args
-     */
-    public static void main(String[] args)
-    {
-        // Read input
-        Scanner in = new Scanner(System.in);
-
-        int n = in.nextInt(); // Number of treehouse nodes
-        int e = in.nextInt(); // Number of grounded treehouse nodes
-        int p = in.nextInt(); // Number of treehouse cables already installed
-        int[] CCs = new int[n]; // Contains the component information for each node
-        HashMap<Integer, HashSet<Integer>> CCsets = new HashMap<>();
-        Point2D.Double[] trees = new Point2D.Double[n]; //Contains tree location information
-        ArrayList<Edge> cables = new ArrayList<Edge>(); // Keep track of existing and 'imaginary' cables
-
-        //Reading in the first e 'grounded' tree-houses
-        for(int i = 0; i < e; i++)
-        {
-            CCs[i] = 0;
-            trees[i] = new Point2D.Double(in.nextDouble(), in.nextDouble());
-            AddToComponent(i, 0, CCsets);
-        }
-
-        // Reading in the next n-e 'airborne' tree-houses
-        for(int i = e; i < n; i++)
-        {
-            trees[i] = new Point2D.Double(in.nextDouble(), in.nextDouble());
-            CCs[i] = i;
-            AddToComponent(i, i, CCsets);
-        }
-
-        // Connecting the remaining trees
-        for(int i = 0; i < p; i++)
-        {
-            int first = in.nextInt();
-            int second = in.nextInt();
-            Join(first-1, second-1, CCs, CCsets);
-        }
-
-        //Generate all possible edges
-        for(int i = 0; i < n; i++)
-        {
-            for(int j = 0; j < n; j++)
-            {
-                if (i == j)
-                    continue;
-                else
-                    cables.add(new Edge(i, j, DistanceTo(trees[i], trees[j])));
+    private static ArrayList<Edge> getAllCableDistance(ArrayList<Edge> cables, int n, Point2D.Double[] points) {
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                cables.add(new Edge(i, j, points[i].distance(points[j])));
             }
         }
-        cables.sort(null);
-
-        double usedCable = 0; // Tally the amount of cable used as a function of distance
-
-        for(Edge e1 : cables)
-        {
-            // Attempt to join endpoints of an edge
-            // Will return true if e1 is not useless
-            if(Join(e1.src, e1.dest, CCs, CCsets))
-                usedCable += e1.weight;
-        }
-        System.out.print(usedCable);
+        return cables;
     }
 }
 
-/**
- * Edge class.
- * Represents an 'undirected' edge in the MST problem
- * of Tree-houses
- */
-class Edge implements Comparable
-{
-    int src;
-    int dest;
-    double weight;
-    public Edge(int _src, int _dest, double w)
-    {
-        this.src = _src;
-        this.dest = _dest;
-        this.weight = w;
+class Edge implements Comparable<Edge> {
+    int start, end;
+    double distance;
+
+    public Edge(int s, int e, double d) {
+        this.start = s;
+        this.end = e;
+        this.distance = d;
     }
 
-    /**
-     * Method in order to use Arrays.sort, by implementing comparable.
-     * Gives priority to lighter edges
-     * @param o
-     * @return
-     */
-    @Override
-    public int compareTo(Object o) {
-        return this.weight > ((Edge)o).weight ? 1 : -1;
+    public int compareTo(Edge o) {
+        return this.distance > o.distance ? 1 : -1;
     }
 }
 

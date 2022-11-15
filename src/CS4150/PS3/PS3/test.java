@@ -1,5 +1,5 @@
 package PS3;
-
+import java.awt.geom.Point2D;
 import java.util.*;
 import java.util.List;
 
@@ -47,15 +47,16 @@ public class test {
         list.add(8);
 
 
+        // System.out.println(getMaximumEvenSum(list));
 
-       // System.out.println(getMaximumEvenSum(list));
+        HashMap<Integer, Integer> map1 = new HashMap<>();
+        map1.put(1, 1);
+        map1.put(1, map1.get(1) - 1);
 
-        HashMap<Integer,Integer> map1 = new HashMap<>();
-        map1.put(1,1);
-        map1.put(1,map1.get(1) - 1);
+        Point2D point2d_1 = new Point2D.Double(1.0, 2.0);
 
-        System.out.println(map1);
 
+        System.out.println(point2d_1.distance(2, 0));
     }
 
     public static long getMaximumEvenSum(List<Integer> val) {
