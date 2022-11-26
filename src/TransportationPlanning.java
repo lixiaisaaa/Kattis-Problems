@@ -68,9 +68,8 @@ public class TransportationPlanning {
                             newDistance[i][j] = Math.min(newDistance[i][j], newDistance[i][p2] + weights[p2][p1] + newDistance[p1][j]);
                         }
                     }
-                    double newSum = getSum(newDistance);
-                    if (newSum < bestSum)
-                        bestSum = newSum;
+
+                    bestSum = Math.min(bestSum, getSum(newDistance));
                 }
             }
         }
