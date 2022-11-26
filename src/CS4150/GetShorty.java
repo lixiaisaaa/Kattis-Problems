@@ -2,8 +2,8 @@ import java.util.Arrays;
 import java.util.PriorityQueue;
 import java.util.Scanner;
 
-public class GetShorty {
 
+public class GetShorty {
     public static void main(String[] args) {
         Scanner s = new Scanner(System.in);
         // n = Number of intersections      // m = Number of corridors
@@ -27,10 +27,20 @@ public class GetShorty {
         int src = 0;
 
         System.out.format("%.4f", dijkstra(map, distance, src, n));
-
     }
 
-    private static double dijkstra(double[][] map, double[] distance, int src, int dst) {
+    /**
+     * Implemented variance Dijkstra's algorithm, calculate some in terms of
+     * the "longest path" with multiply factors instead of adding up distance.
+     * Starting with source node and 1 as factor
+     *
+     * @param map
+     * @param distance
+     * @param src
+     * @param numOfNode
+     * @return
+     */
+    private static double dijkstra(double[][] map, double[] distance, int src, int numOfNode) {
 
         PriorityQueue<Vertex> p = new PriorityQueue<>();
         p.add(new Vertex(src, 1));
@@ -38,11 +48,7 @@ public class GetShorty {
         while (!p.isEmpty()) {
             Vertex curr = p.poll();
 
-            if (curr.node == dst) {
-                return curr.node;
-            }
-
-            for (int nei = 0; nei < dst; nei++) {
+            for (int nei = 0; nei < numOfNode; nei++) {
                 if (map[curr.node][nei] > 0) {
                     double f = curr.factor * map[curr.node][nei];
                     if (f > distance[nei]) {
@@ -56,7 +62,9 @@ public class GetShorty {
     }
 }
 
-
+/**
+ * Class only for comparable and storing vertex value.
+ */
 class Vertex implements Comparable<Vertex> {
     int node;
     double factor;
