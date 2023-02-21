@@ -1,5 +1,8 @@
 package PS5;
-import java.util.*;
+
+import java.util.LinkedList;
+import java.util.Queue;
+import java.util.Scanner;
 
 public class GettingGold {
     public static void main(String[] args) {

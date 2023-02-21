@@ -15,7 +15,7 @@ public class Anagrams {
 		HashSet<String> anagramList = new HashSet<String>();
 		for (int i = 0; i < n; i++) {
 
-			char temp[] = s.next().toCharArray();
+			char[] temp = s.next().toCharArray();
 			Arrays.sort(temp);
 
 			String anagram = new String(temp);

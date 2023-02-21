@@ -1,15 +1,15 @@
 package PS6;
+
 import java.util.*;
-import java.util.Scanner;
 
 public class ArtisanalCooking {
 
-    public static void main(String args[]) {
+    public static void main(String[] args) {
         Scanner s = new Scanner(System.in);
         //col and row
-        int foods =  s.nextInt();
+        int foods = s.nextInt();
         int dependencies = s.nextInt();
-        HashMap<Integer, HashMap<Integer,Integer>> graph = new HashMap();
+        HashMap<Integer, HashMap<Integer, Integer>> graph = new HashMap();
         HashMap<Integer, Integer> indegree = new HashMap();
         Queue<Integer> queue = new LinkedList<>();
         Queue<Integer> preorder = new LinkedList<>();

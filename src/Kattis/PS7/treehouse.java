@@ -37,7 +37,7 @@ public class treehouse {
             union(tree1 - 1, tree2 - 1, IDs, graph);
         }
 
-        System.out.print(String.format("%.6f", kruskal(cables, n, points, graph, IDs)));
+        System.out.printf("%.6f", kruskal(cables, n, points, graph, IDs));
     }
 
 
